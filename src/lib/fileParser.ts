@@ -10,8 +10,8 @@ interface RawOrderRow {
 
 // 常见的列名映射
 const WAYBILL_COLUMNS = ['运单号', '单号', '订单号', 'waybill', 'order_no', 'waybillNo'];
-const DESTINATION_COLUMNS = ['目的地', '省份', '收货省份', '省', 'destination', 'province'];
-const WEIGHT_COLUMNS = ['重量', '重量(kg)', '重量（kg）', 'weight', '包裹重量'];
+const DESTINATION_COLUMNS = ['目的地', '省份', '收货省份', '省', '目的省份', 'destination', 'province'];
+const WEIGHT_COLUMNS = ['重量', '重量(kg)', '重量（kg）', '结算重量', 'weight', '包裹重量'];
 
 /**
  * 查找匹配的列名
