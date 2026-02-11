@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRules } from '../../context/RuleContext';
 import { RuleEditor } from '../RuleEditor/RuleEditor';
 import type { FreightRule } from '../../lib/types';
@@ -7,6 +7,13 @@ export function RuleManagement() {
   const { rules, loading, addRule, updateRule, deleteRule } = useRules();
   const [showEditor, setShowEditor] = useState(false);
   const [editingRule, setEditingRule] = useState<FreightRule | undefined>();
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  const filteredRules = useMemo(() => {
+    if (!searchKeyword.trim()) return rules;
+    const keyword = searchKeyword.trim().toLowerCase();
+    return rules.filter(rule => rule.name.toLowerCase().includes(keyword));
+  }, [rules, searchKeyword]);
 
   const handleCreate = () => {
     setEditingRule(undefined);
@@ -72,9 +79,30 @@ export function RuleManagement() {
       <div className="card">
         <div className="card-header">
           <h3 className="card-title">规则列表</h3>
-          <button className="btn btn-primary" onClick={handleCreate}>
-            <span>➕</span> 新建规则
-          </button>
+          <div className="card-header-actions">
+            <div className="search-box">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="搜索规则名称..."
+                value={searchKeyword}
+                onChange={e => setSearchKeyword(e.target.value)}
+              />
+              {searchKeyword && (
+                <button
+                  className="search-clear"
+                  onClick={() => setSearchKeyword('')}
+                  title="清除搜索"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <button className="btn btn-primary" onClick={handleCreate}>
+              <span>➕</span> 新建规则
+            </button>
+          </div>
         </div>
 
         {rules.length === 0 ? (
@@ -86,9 +114,18 @@ export function RuleManagement() {
               创建规则
             </button>
           </div>
+        ) : filteredRules.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">🔍</div>
+            <h4 className="empty-state-title">未找到匹配的规则</h4>
+            <p className="empty-state-description">没有找到名称包含 "{searchKeyword}" 的规则，请尝试其他关键词</p>
+            <button className="btn btn-secondary" onClick={() => setSearchKeyword('')}>
+              清除搜索
+            </button>
+          </div>
         ) : (
           <div className="rule-list">
-            {rules.map(rule => (
+            {filteredRules.map(rule => (
               <div key={rule.id} className="rule-item">
                 <div className="rule-info">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
